@@ -1,7 +1,10 @@
 import os
+import streamlit as st
 from openai import OpenAI
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Use st.secrets if available, fallback to os.getenv for local use
+api_key = st.secrets["OPENAI_API_KEY"] if "OPENAI_API_KEY" in st.secrets else os.getenv("OPENAI_API_KEY")
+client = OpenAI(api_key=api_key)
 
 def explain_results(topic, results_dict):
     prompt = f"""
