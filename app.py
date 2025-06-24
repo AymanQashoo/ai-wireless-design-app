@@ -36,7 +36,9 @@ with tab1:
             explanation = explain_results("wireless_comm", results)
             st.info(explanation)
         else:
-            st.error("Computation failed. Please check input values.")
+            st.write(results)
+            st.warning("Note: Could not explain results as the output is not a dictionary.")
+
 
 # Link Budget Tab
 with tab2:
