@@ -1,27 +1,27 @@
-import os
+# ai_agent.py
+
 import streamlit as st
 from openai import OpenAI
 
-# Use st.secrets if available, fallback to os.getenv for local use
-api_key = st.secrets["OPENAI_API_KEY"] if "OPENAI_API_KEY" in st.secrets else os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=api_key)
+# Load API key from Streamlit secrets
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-def explain_results(topic, results_dict):
-    prompt = f"""
-    I am working on wireless network design. Please explain the following {topic.replace('_', ' ')} results in simple language:\n\n
-    {results_dict}\n\n
-    Make it clear and concise for an engineering student.
-    """
+def explain_results(results_dict: dict) -> str:
+    prompt = (
+        "Please explain the following wireless system output values in simple terms for a student:\n\n"
+    )
+    for key, value in results_dict.items():
+        prompt += f"{key}: {value}\n"
 
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a wireless network engineering assistant."},
-                {"role": "user", "content": prompt}
-            ],
-            max_tokens=300
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        return f"Error generating explanation: {e}"
+    # Make the request to OpenAI
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant who explains wireless communication system outputs."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7,
+        max_tokens=300
+    )
+
+    return response.choices[0].message.content.strip()
