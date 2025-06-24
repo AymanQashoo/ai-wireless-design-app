@@ -32,7 +32,9 @@ with tabs[0]:
     if st.button("Compute Wireless Comm"):
         results = wireless_comm.compute(fs, bits, src_rate, ch_rate, interleave_ratio, burst_ratio)
         st.write(results)
-        st.info(explain_results("wireless_comm", results))
+        explanation = explain_results("wireless_comm", results)
+        st.info(explanation)
+
 
 # 2. OFDM System
 with tabs[1]:
