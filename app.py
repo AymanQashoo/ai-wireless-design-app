@@ -1,79 +1,79 @@
 import streamlit as st
 from calculations.wireless_comm import compute_wireless_comm
-from calculations.ofdm import compute_ofdm_parameters
 from calculations.link_budget import compute_link_budget
-from calculations.cellular_design import compute_cellular_design
+from calculations.ofdm import compute_ofdm_parameters
+from calculations.cellular_design import compute_cellular_parameters
 from ai_agent import explain_results
 
-st.set_page_config(page_title="Wireless Communication App", layout="wide")
+st.set_page_config(page_title="AI Wireless Design", layout="wide")
 
-# Tabs
-tab1, tab2, tab3, tab4 = st.tabs(["Wireless Comm System", "OFDM System", "Link Budget", "Cellular Design"])
+st.title("📡 AI-Powered Wireless and Mobile Networks Calculator")
 
-# Tab 1 - Wireless Communication System
+tab1, tab2, tab3, tab4 = st.tabs(["Wireless Comm", "Link Budget", "OFDM", "Cellular"])
+
+# Wireless Communication Tab
 with tab1:
-    st.title("Wireless Communication System")
-    
-    sampling_rate = st.number_input("Sampling Rate (Hz)", value=1000.0)
-    bits_per_sample = st.number_input("Bits per Sample", value=1)
-    source_encoder_rate = st.slider("Source Encoder Rate (0-1)", 0.0, 1.0, 0.8)
-    channel_encoder_rate = st.slider("Channel Encoder Rate (0-1)", 0.0, 1.0, 0.6)
-    interleaver_overhead = st.number_input("Interleaver Overhead (e.g. 1.1 = 10%)", value=1.1)
-    burst_formatter_overhead = st.number_input("Burst Formatter Overhead", value=1.2)
+    st.header("Digital Wireless Communication System")
+    sampling_rate = st.number_input("Sampler Output Rate (Hz)", min_value=1, value=8000)
+    bits_per_sample = st.number_input("Quantizer Output Rate (bps)", min_value=1, value=64000)
+    source_encoder_rate = st.number_input("Source Encoder Output Rate (bps)", min_value=1, value=38400)
+    channel_encoder_rate = st.slider("Channel Encoder Output Rate (%)", min_value=0, max_value=100, value=80)
+    interleaver_overhead = st.slider("Interleaver Overhead (%)", min_value=0, max_value=100, value=10)
+    burst_formatter_overhead = st.slider("Burst Formatter Overhead (%)", min_value=0, max_value=100, value=20)
 
     if st.button("Compute Wireless Comm"):
-        results = compute_wireless_comm(sampling_rate, bits_per_sample, source_encoder_rate,
-                                        channel_encoder_rate, interleaver_overhead, burst_formatter_overhead)
-        st.json(results)
+        results = compute_wireless_comm(
+            sampling_rate,
+            bits_per_sample,
+            source_encoder_rate,
+            channel_encoder_rate,
+            interleaver_overhead,
+            burst_formatter_overhead
+        )
 
-        explanation = explain_results("wireless_comm", results)
-        st.info(explanation)
+        if isinstance(results, dict):
+            st.json(results)
+            explanation = explain_results("wireless_comm", results)
+            st.info(explanation)
+        else:
+            st.error("Computation failed. Please check input values.")
 
-# Tab 2 - OFDM System
+# Link Budget Tab
 with tab2:
-    st.title("OFDM System")
-    
-    total_bandwidth = st.number_input("Total Bandwidth (Hz)", value=20000.0)
-    subcarrier_spacing = st.number_input("Subcarrier Spacing (Hz)", value=15.0)
-    cp_length = st.number_input("Cyclic Prefix Length (samples)", value=16)
-
-    if st.button("Compute OFDM"):
-        results = compute_ofdm_parameters(total_bandwidth, subcarrier_spacing, cp_length)
-        st.json(results)
-
-        explanation = explain_results("ofdm", results)
-        st.info(explanation)
-
-# Tab 3 - Link Budget
-with tab3:
-    st.title("Link Budget Calculator")
-
-    tx_power = st.number_input("Transmit Power (dBm)", value=30.0)
-    tx_gain = st.number_input("Transmit Antenna Gain (dBi)", value=14.0)
-    rx_gain = st.number_input("Receive Antenna Gain (dBi)", value=14.0)
-    path_loss = st.number_input("Path Loss (dB)", value=100.0)
-    other_losses = st.number_input("Other Losses (dB)", value=2.0)
+    st.header("Link Budget Calculation")
+    tx_power = st.number_input("Transmitted Power (dBm)", value=30)
+    tx_gain = st.number_input("Transmitter Antenna Gain (dBi)", value=15)
+    rx_gain = st.number_input("Receiver Antenna Gain (dBi)", value=12)
+    path_loss = st.number_input("Path Loss (dB)", value=100)
 
     if st.button("Compute Link Budget"):
-        results = compute_link_budget(tx_power, tx_gain, rx_gain, path_loss, other_losses)
+        results = compute_link_budget(tx_power, tx_gain, rx_gain, path_loss)
         st.json(results)
-
         explanation = explain_results("link_budget", results)
         st.info(explanation)
 
-# Tab 4 - Cellular Design
-with tab4:
-    st.title("Cellular Network Design")
+# OFDM Tab
+with tab3:
+    st.header("OFDM System Parameters")
+    bandwidth = st.number_input("System Bandwidth (Hz)", value=20_000_000)
+    num_subcarriers = st.number_input("Number of Subcarriers", value=64)
+    cp_duration = st.number_input("Cyclic Prefix Duration (us)", value=4.0)
 
-    area_km2 = st.number_input("Total Area (km²)", value=100.0)
-    cell_radius_km = st.number_input("Cell Radius (km)", value=1.0)
-    users_per_cell = st.number_input("Users per Cell", value=1000)
-    spectral_efficiency = st.number_input("Spectral Efficiency (bps/Hz)", value=2.0)
-    bandwidth_mhz = st.number_input("Bandwidth (MHz)", value=10.0)
+    if st.button("Compute OFDM Parameters"):
+        results = compute_ofdm_parameters(bandwidth, num_subcarriers, cp_duration)
+        st.json(results)
+        explanation = explain_results("ofdm", results)
+        st.info(explanation)
+
+# Cellular Design Tab
+with tab4:
+    st.header("Cellular Network Design")
+    cell_radius = st.number_input("Cell Radius (km)", value=1.0)
+    freq_reuse = st.number_input("Frequency Reuse Factor (N)", value=7)
+    num_channels = st.number_input("Total Number of Channels", value=350)
 
     if st.button("Compute Cellular Design"):
-        results = compute_cellular_design(area_km2, cell_radius_km, users_per_cell, spectral_efficiency, bandwidth_mhz)
+        results = compute_cellular_parameters(cell_radius, freq_reuse, num_channels)
         st.json(results)
-
         explanation = explain_results("cellular_design", results)
         st.info(explanation)

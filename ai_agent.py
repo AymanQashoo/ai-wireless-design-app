@@ -1,27 +1,30 @@
-# ai_agent.py
-
+import os
 import streamlit as st
 from openai import OpenAI
 
-# Load OpenAI API key from Streamlit secrets
+# Load API key from Streamlit secrets
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-def explain_results(results_dict):
+def explain_results(topic, results):
     prompt = (
-        "You are an expert in wireless communication systems. "
-        "Please explain the following results in clear and simple terms:\n\n"
-        f"{results_dict}\n\n"
-        "The explanation should be educational and easy to understand for students."
+        f"You're an expert in wireless and mobile communication systems.\n"
+        f"Explain the following {topic.replace('_', ' ')} calculation results in simple, clear terms:\n"
+        f"{results}\n"
+        f"Use bullet points if helpful and make it understandable for engineering students."
     )
 
     try:
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4",
             messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "system", "content": "You are a helpful assistant that explains telecom engineering calculations."},
                 {"role": "user", "content": prompt}
-            ]
+            ],
+            temperature=0.5,
+            max_tokens=500
         )
-        return response.choices[0].message.content
+
+        return response.choices[0].message.content.strip()
+
     except Exception as e:
-        return f"⚠️ Failed to generate explanation: {e}"
+        return f"⚠️ Error generating explanation: {str(e)}"
