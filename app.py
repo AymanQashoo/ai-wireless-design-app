@@ -32,12 +32,19 @@ with tab1:
         )
 
         if isinstance(results, dict):
-            st.json(results)
-            explanation = explain_results("wireless_comm", results)
-            st.info(explanation)
+            try:
+                st.json(results)
+            except Exception as e:
+                st.error(f"Failed to display JSON: {e}")
+            try:
+                explanation = explain_results("wireless_comm", results)
+                st.info(explanation)
+            except Exception as e:
+                st.warning(f"Explanation generation failed: {e}")
         else:
             st.write(results)
             st.warning("Note: Could not explain results as the output is not a dictionary.")
+
 
 
 # Link Budget Tab
