@@ -31,19 +31,20 @@ with tab1:
             burst_formatter_overhead
         )
 
-        if isinstance(results, dict):
+        if results:
             try:
-                st.json(results)
+                if isinstance(results, dict):
+                    st.json(results)
+                    explanation = explain_results("wireless_comm", results)
+                    st.info(explanation)
+                else:
+                    st.write(results)
+                    st.warning("Note: Output is not a dictionary.")
             except Exception as e:
-                st.error(f"Failed to display JSON: {e}")
-            try:
-                explanation = explain_results("wireless_comm", results)
-                st.info(explanation)
-            except Exception as e:
-                st.warning(f"Explanation generation failed: {e}")
+                st.error(f"An error occurred while displaying results: {e}")
         else:
-            st.write(results)
-            st.warning("Note: Could not explain results as the output is not a dictionary.")
+            st.error("Computation failed. Please check input values.")
+
 
 
 
