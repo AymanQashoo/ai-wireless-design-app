@@ -32,7 +32,7 @@ if task_id == "wireless_comm":
             if isinstance(results, dict):
                 st.json(results)
                 explanation = explain_results("wireless_comm", results)
-                st.info(explanation)
+                st.info(str(explanation))
             else:
                 st.write(results)
                 st.warning("Results are not in expected dictionary format.")
@@ -53,7 +53,7 @@ elif task_id == "link_budget":
             if isinstance(results, dict):
                 st.json(results)
                 explanation = explain_results("link_budget", results)
-                st.info(explanation)
+                st.info(str(explanation))
             else:
                 st.write(results)
                 st.warning("Results are not in expected dictionary format.")
@@ -72,7 +72,7 @@ elif task_id == "ofdm":
             if isinstance(results, dict):
                 st.json(results)
                 explanation = explain_results("ofdm", results)
-                st.info(explanation)
+                st.info(str(explanation))
             else:
                 st.write(results)
                 st.warning("Results are not in expected dictionary format.")
@@ -91,7 +91,7 @@ elif task_id == "cellular":
             if isinstance(results, dict):
                 st.json(results)
                 explanation = explain_results("cellular", results)
-                st.info(explanation)
+                st.info(str(explanation))
             else:
                 st.write(results)
                 st.warning("Results are not in expected dictionary format.")
