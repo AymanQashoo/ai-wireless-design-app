@@ -6,84 +6,97 @@ from calculations.cellular_design import compute_cellular_parameters
 from ai_agent import explain_results
 
 st.set_page_config(page_title="AI Wireless Design", layout="wide")
+st.title("📡 AI-Powered Wireless Communication Design Tool")
 
-st.title("📡 AI-Powered Wireless and Mobile Networks Calculator")
+# Sidebar for navigation
+tabs = {
+    "Wireless Communication System": "wireless_comm",
+    "Link Budget Calculator": "link_budget",
+    "OFDM System Parameters": "ofdm",
+    "Cellular Network Design": "cellular"
+}
+page = st.sidebar.radio("Choose a Module", list(tabs.keys()))
+task_id = tabs[page]
 
-tab1, tab2, tab3, tab4 = st.tabs(["Wireless Comm", "Link Budget", "OFDM", "Cellular"])
+# Input + Computation Handling
+if task_id == "wireless_comm":
+    st.header("Compute Wireless Comm")
+    try:
+        sampler_rate = st.number_input("Sampler Output Rate (Hz)", value=8000)
+        quantizer_rate = st.number_input("Quantizer Output Rate (bps)", value=64000)
 
-# Wireless Communication Tab
-with tab1:
-    st.header("Digital Wireless Communication System")
-    sampling_rate = st.number_input("Sampler Output Rate (Hz)", min_value=1, value=8000)
-    bits_per_sample = st.number_input("Quantizer Output Rate (bps)", min_value=1, value=64000)
-    source_encoder_rate = st.number_input("Source Encoder Output Rate (bps)", min_value=1, value=38400)
-    channel_encoder_rate = st.slider("Channel Encoder Output Rate (%)", min_value=0, max_value=100, value=80)
-    interleaver_overhead = st.slider("Interleaver Overhead (%)", min_value=0, max_value=100, value=10)
-    burst_formatter_overhead = st.slider("Burst Formatter Overhead (%)", min_value=0, max_value=100, value=20)
-
-    if st.button("Compute Wireless Comm"):
-        results = compute_wireless_comm(
-            sampling_rate,
-            bits_per_sample,
-            source_encoder_rate,
-            channel_encoder_rate,
-            interleaver_overhead,
-            burst_formatter_overhead
-        )
-
-        if results:
-            try:
-                if isinstance(results, dict):
-                    st.json(results)
+        if st.button("Compute Wireless Comm"):
+            results = compute_wireless_comm(sampler_rate, quantizer_rate)
+            if isinstance(results, dict):
+                st.json(results)
+                try:
                     explanation = explain_results("wireless_comm", results)
                     st.info(explanation)
-                else:
-                    st.write(results)
-                    st.warning("Note: Output is not a dictionary.")
-            except Exception as e:
-                st.error(f"An error occurred while displaying results: {e}")
-        else:
-            st.error("Computation failed. Please check input values.")
+                except Exception as e:
+                    st.warning(f"AI explanation error: {e}")
+            else:
+                st.write(results)
+    except Exception as e:
+        st.error(f"Error: {e}")
 
+elif task_id == "link_budget":
+    st.header("Link Budget Calculator")
+    try:
+        tx_power = st.number_input("Transmitter Power (dBm)", value=30)
+        tx_gain = st.number_input("Transmitter Gain (dBi)", value=15)
+        rx_gain = st.number_input("Receiver Gain (dBi)", value=12)
+        path_loss = st.number_input("Path Loss (dB)", value=100)
 
+        if st.button("Compute Link Budget"):
+            results = compute_link_budget(tx_power, tx_gain, rx_gain, path_loss)
+            if isinstance(results, dict):
+                st.json(results)
+                try:
+                    explanation = explain_results("link_budget", results)
+                    st.info(explanation)
+                except Exception as e:
+                    st.warning(f"AI explanation error: {e}")
+            else:
+                st.write(results)
+    except Exception as e:
+        st.error(f"Error: {e}")
 
-
-# Link Budget Tab
-with tab2:
-    st.header("Link Budget Calculation")
-    tx_power = st.number_input("Transmitted Power (dBm)", value=30)
-    tx_gain = st.number_input("Transmitter Antenna Gain (dBi)", value=15)
-    rx_gain = st.number_input("Receiver Antenna Gain (dBi)", value=12)
-    path_loss = st.number_input("Path Loss (dB)", value=100)
-
-    if st.button("Compute Link Budget"):
-        results = compute_link_budget(tx_power, tx_gain, rx_gain, path_loss)
-        st.json(results)
-        explanation = explain_results("link_budget", results)
-        st.info(explanation)
-
-# OFDM Tab
-with tab3:
+elif task_id == "ofdm":
     st.header("OFDM System Parameters")
-    bandwidth = st.number_input("System Bandwidth (Hz)", value=20_000_000)
-    num_subcarriers = st.number_input("Number of Subcarriers", value=64)
-    cp_duration = st.number_input("Cyclic Prefix Duration (us)", value=4.0)
+    try:
+        bandwidth = st.number_input("Channel Bandwidth (Hz)", value=20000)
+        num_subcarriers = st.number_input("Number of Subcarriers", value=64)
 
-    if st.button("Compute OFDM Parameters"):
-        results = compute_ofdm_parameters(bandwidth, num_subcarriers, cp_duration)
-        st.json(results)
-        explanation = explain_results("ofdm", results)
-        st.info(explanation)
+        if st.button("Compute OFDM Parameters"):
+            results = compute_ofdm_parameters(bandwidth, num_subcarriers)
+            if isinstance(results, dict):
+                st.json(results)
+                try:
+                    explanation = explain_results("ofdm", results)
+                    st.info(explanation)
+                except Exception as e:
+                    st.warning(f"AI explanation error: {e}")
+            else:
+                st.write(results)
+    except Exception as e:
+        st.error(f"Error: {e}")
 
-# Cellular Design Tab
-with tab4:
+elif task_id == "cellular":
     st.header("Cellular Network Design")
-    cell_radius = st.number_input("Cell Radius (km)", value=1.0)
-    freq_reuse = st.number_input("Frequency Reuse Factor (N)", value=7)
-    num_channels = st.number_input("Total Number of Channels", value=350)
+    try:
+        area = st.number_input("Total Area (km²)", value=100)
+        cell_radius = st.number_input("Cell Radius (km)", value=1)
 
-    if st.button("Compute Cellular Design"):
-        results = compute_cellular_parameters(cell_radius, freq_reuse, num_channels)
-        st.json(results)
-        explanation = explain_results("cellular_design", results)
-        st.info(explanation)
+        if st.button("Compute Cellular Design"):
+            results = compute_cellular_parameters(area, cell_radius)
+            if isinstance(results, dict):
+                st.json(results)
+                try:
+                    explanation = explain_results("cellular", results)
+                    st.info(explanation)
+                except Exception as e:
+                    st.warning(f"AI explanation error: {e}")
+            else:
+                st.write(results)
+    except Exception as e:
+        st.error(f"Error: {e}")
