@@ -1,20 +1,10 @@
-# calculations/link_budget.py
-import math
+def compute_link_budget(tx_power, tx_gain, rx_gain, path_loss):
+    received_power = tx_power + tx_gain + rx_gain - path_loss
 
-def compute(tx_power_dbm, tx_gain_dbi, rx_gain_dbi, freq_mhz, distance_km):
-    results = {}
-
-    # Convert frequency and distance for FSPL formula
-    f = freq_mhz  # MHz
-    d = distance_km  # km
-
-    # Free-space path loss (FSPL) in dB
-    fspl = 20 * math.log10(d) + 20 * math.log10(f) + 32.44
-
-    # Received power in dBm
-    received_power_dbm = tx_power_dbm + tx_gain_dbi + rx_gain_dbi - fspl
-
-    results['Free-Space Path Loss (dB)'] = round(fspl, 2)
-    results['Received Power (dBm)'] = round(received_power_dbm, 2)
-
-    return results
+    return {
+        "Transmitter Power (dBm)": tx_power,
+        "Transmitter Gain (dBi)": tx_gain,
+        "Receiver Gain (dBi)": rx_gain,
+        "Path Loss (dB)": path_loss,
+        "Received Power (dBm)": received_power
+    }
