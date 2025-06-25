@@ -1,9 +1,9 @@
 import os
 import streamlit as st
-from openai import OpenAI
+import openai
 
 # Load API key from Streamlit secrets
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 def explain_results(topic, results):
     prompt = (
@@ -14,7 +14,7 @@ def explain_results(topic, results):
     )
 
     try:
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that explains telecom engineering calculations."},
@@ -24,7 +24,7 @@ def explain_results(topic, results):
             max_tokens=500
         )
 
-        return response.choices[0].message.content.strip()
+        return response.choices[0].message["content"].strip()
 
     except Exception as e:
         return f"⚠️ Error generating explanation: {str(e)}"
