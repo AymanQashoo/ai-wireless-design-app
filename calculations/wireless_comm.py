@@ -28,3 +28,22 @@ def compute(fs, bits, src_rate, ch_rate, interleave_ratio, burst_ratio):
     results['Burst Formatter Output Rate (bps)'] = r6
 
     return results
+
+def compute_wireless_comm(sampler_rate, quantizer_rate):
+    sampler_output_rate = sampler_rate
+    quantizer_output_rate = quantizer_rate
+    source_encoder_output_rate = quantizer_output_rate * 0.6
+    channel_encoder_output_rate = source_encoder_output_rate / 0.7
+    interleaver_output_rate = channel_encoder_output_rate * 1.1
+    burst_formatter_output_rate = interleaver_output_rate * 1.2
+
+    results = {
+        "Sampler Output Rate (Hz)": sampler_output_rate,
+        "Quantizer Output Rate (bps)": quantizer_output_rate,
+        "Source Encoder Output Rate (bps)": source_encoder_output_rate,
+        "Channel Encoder Output Rate (bps)": channel_encoder_output_rate,
+        "Interleaver Output Rate (bps)": interleaver_output_rate,
+        "Burst Formatter Output Rate (bps)": burst_formatter_output_rate
+    }
+
+    return results

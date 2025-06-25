@@ -8,7 +8,6 @@ from ai_agent import explain_results
 st.set_page_config(page_title="AI Wireless Design", layout="wide")
 st.title("📡 AI-Powered Wireless Communication Design Tool")
 
-# Sidebar navigation
 tabs = {
     "Wireless Communication System": "wireless_comm",
     "Link Budget Calculator": "link_budget",
@@ -19,81 +18,66 @@ tabs = {
 page = st.sidebar.radio("Choose a Module", list(tabs.keys()))
 task_id = tabs[page]
 
-# Main logic
-if task_id == "wireless_comm":
-    st.header("Compute Wireless Communication System")
-    sampler_rate = st.number_input("Sampler Output Rate (Hz)", value=8000)
-    quantizer_rate = st.number_input("Quantizer Output Rate (bps)", value=64000)
+try:
+    if task_id == "wireless_comm":
+        st.header("Compute Wireless Communication System")
+        sampler_rate = st.number_input("Sampler Output Rate (Hz)", value=8000)
+        quantizer_rate = st.number_input("Quantizer Output Rate (bps)", value=64000)
 
-    if st.button("Compute Wireless Comm"):
-        try:
+        if st.button("Compute Wireless Comm"):
             results = compute_wireless_comm(sampler_rate, quantizer_rate)
-
             if isinstance(results, dict):
                 st.json(results)
                 explanation = explain_results("wireless_comm", results)
                 st.info(str(explanation))
             else:
-                st.write(results)
-                st.warning("Results are not in expected dictionary format.")
-        except Exception as e:
-            st.error(f"Error encountered: {e}")
+                st.warning("Results are not in the expected dictionary format.")
 
-elif task_id == "link_budget":
-    st.header("Link Budget Calculator")
-    tx_power = st.number_input("Transmitter Power (dBm)", value=30)
-    tx_gain = st.number_input("Transmitter Gain (dBi)", value=15)
-    rx_gain = st.number_input("Receiver Gain (dBi)", value=12)
-    path_loss = st.number_input("Path Loss (dB)", value=100)
+    elif task_id == "link_budget":
+        st.header("Link Budget Calculator")
+        tx_power = st.number_input("Transmitter Power (dBm)", value=30)
+        tx_gain = st.number_input("Transmitter Gain (dBi)", value=15)
+        rx_gain = st.number_input("Receiver Gain (dBi)", value=12)
+        path_loss = st.number_input("Path Loss (dB)", value=100)
 
-    if st.button("Compute Link Budget"):
-        try:
+        if st.button("Compute Link Budget"):
             results = compute_link_budget(tx_power, tx_gain, rx_gain, path_loss)
-
             if isinstance(results, dict):
                 st.json(results)
                 explanation = explain_results("link_budget", results)
                 st.info(str(explanation))
             else:
-                st.write(results)
-                st.warning("Results are not in expected dictionary format.")
-        except Exception as e:
-            st.error(f"Error encountered: {e}")
+                st.warning("Results are not in the expected dictionary format.")
 
-elif task_id == "ofdm":
-    st.header("OFDM System Parameters")
-    bandwidth = st.number_input("Channel Bandwidth (Hz)", value=20000)
-    num_subcarriers = st.number_input("Number of Subcarriers", value=64)
+    elif task_id == "ofdm":
+        st.header("OFDM System Parameters")
+        bandwidth = st.number_input("Channel Bandwidth (Hz)", value=20000)
+        num_subcarriers = st.number_input("Number of Subcarriers", value=64)
 
-    if st.button("Compute OFDM Parameters"):
-        try:
+        if st.button("Compute OFDM Parameters"):
             results = compute_ofdm_parameters(bandwidth, num_subcarriers)
-
             if isinstance(results, dict):
                 st.json(results)
                 explanation = explain_results("ofdm", results)
                 st.info(str(explanation))
             else:
-                st.write(results)
-                st.warning("Results are not in expected dictionary format.")
-        except Exception as e:
-            st.error(f"Error encountered: {e}")
+                st.warning("Results are not in the expected dictionary format.")
 
-elif task_id == "cellular":
-    st.header("Cellular Network Design")
-    area = st.number_input("Total Area (km²)", value=100)
-    cell_radius = st.number_input("Cell Radius (km)", value=1)
+    elif task_id == "cellular":
+        st.header("Cellular Network Design")
+        area = st.number_input("Total Area (km²)", value=100)
+        cell_radius = st.number_input("Cell Radius (km)", value=1)
 
-    if st.button("Compute Cellular Design"):
-        try:
+        if st.button("Compute Cellular Design"):
             results = compute_cellular_parameters(area, cell_radius)
-
             if isinstance(results, dict):
                 st.json(results)
                 explanation = explain_results("cellular", results)
                 st.info(str(explanation))
             else:
-                st.write(results)
-                st.warning("Results are not in expected dictionary format.")
-        except Exception as e:
-            st.error(f"Error encountered: {e}")
+                st.warning("Results are not in the expected dictionary format.")
+
+except ImportError as imp_err:
+    st.error(f"Import error detected: {imp_err}")
+except Exception as ex:
+    st.error(f"Error encountered: {ex}")
