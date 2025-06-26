@@ -6,7 +6,7 @@ genai.configure(api_key=st.secrets["general"]["GEMINI_API_KEY"])
 
 
 # Create a Gemini model instance
-model = genai.GenerativeModel('gemini-1.0-pro')
+model = genai.GenerativeModel(model_name="models/gemini-1.5-pro")
 
 def explain_results(topic, results):
     prompt = (
