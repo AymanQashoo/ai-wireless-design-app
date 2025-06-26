@@ -1,8 +1,11 @@
+import google.generativeai as genai
 import streamlit as st
-import openai
 
-# Load API key from Streamlit secrets
-client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+# Configure Gemini with the API key stored in Streamlit secrets
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+
+# Create a Gemini model instance
+model = genai.GenerativeModel("gemini-pro")
 
 def explain_results(topic, results):
     prompt = (
@@ -13,17 +16,8 @@ def explain_results(topic, results):
     )
 
     try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant that explains telecom engineering calculations."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.5,
-            max_tokens=500
-        )
-
-        return response.choices[0].message.content.strip()
+        response = model.generate_content(prompt)
+        return response.text.strip()
 
     except Exception as e:
         return f"⚠️ Error generating explanation: {str(e)}"
