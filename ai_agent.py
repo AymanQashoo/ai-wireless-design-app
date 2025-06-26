@@ -2,7 +2,8 @@ import google.generativeai as genai
 import streamlit as st
 
 # Configure Gemini with the API key stored in Streamlit secrets
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+genai.configure(api_key=st.secrets["general"]["GEMINI_API_KEY"])
+
 
 # Create a Gemini model instance
 model = genai.GenerativeModel("gemini-pro")
@@ -18,6 +19,5 @@ def explain_results(topic, results):
     try:
         response = model.generate_content(prompt)
         return response.text.strip()
-
     except Exception as e:
         return f"⚠️ Error generating explanation: {str(e)}"
