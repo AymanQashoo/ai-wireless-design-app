@@ -3,11 +3,13 @@ from calculations.wireless_comm import compute_wireless_comm
 from calculations.link_budget import compute_link_budget
 from calculations.ofdm import compute_ofdm_parameters
 from calculations.cellular_design import compute_cellular_parameters
-from ai_agent import explain_results
+from ai_agent import explain_results  # Now uses Gemini API
 
+# Streamlit page setup
 st.set_page_config(page_title="AI Wireless Design", layout="wide")
 st.title("📡 AI-Powered Wireless Communication Design Tool")
 
+# Sidebar tab options
 tabs = {
     "Wireless Communication System": "wireless_comm",
     "Link Budget Calculator": "link_budget",
@@ -15,9 +17,11 @@ tabs = {
     "Cellular Network Design": "cellular"
 }
 
+# Choose task
 page = st.sidebar.radio("Choose a Module", list(tabs.keys()))
 task_id = tabs[page]
 
+# Main logic
 try:
     if task_id == "wireless_comm":
         st.header("Compute Wireless Communication System")
