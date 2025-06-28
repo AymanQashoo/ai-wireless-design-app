@@ -46,19 +46,31 @@ if task_id == "wireless_comm":
 
 elif task_id == "ofdm":
     st.header("OFDM System Parameters")
-    bandwidth = st.number_input("Bandwidth (Hz)", value=20000000)
-    fft_size = st.number_input("FFT Size", value=1024)
-    cyclic_prefix_ratio = st.number_input("Cyclic Prefix Ratio", 0.0, 1.0, 0.25)
-    modulation_order = st.number_input("Modulation Order (bits per symbol)", value=4)
-    num_resource_blocks = st.number_input("Number of Resource Blocks", value=50)
-    symbols_per_slot = st.number_input("Symbols per Slot", value=14)
 
-    if st.button("Compute OFDM Parameters"):
+    rb_bandwidth_khz = st.number_input("Resource Block (RB) Bandwidth (kHz)", value=180)
+    subcarrier_spacing_khz = st.number_input("Subcarrier Spacing (kHz)", value=15)
+    num_symbols_per_rb = st.number_input("Number of OFDM Symbols per RB", value=14)
+    rb_duration_ms = st.number_input("RB Duration (ms)", value=1.0)
+    modulation_type = st.selectbox("Modulation Type", ["QPSK", "16-QAM", "64-QAM", "1024-QAM"])
+    parallel_blocks = st.number_input("Parallel Transmission Blocks", value=100)
+
+    if st.button("Calculate OFDM Parameters"):
         results = compute_ofdm_parameters(
-            bandwidth, fft_size, cyclic_prefix_ratio,
-            modulation_order, num_resource_blocks, symbols_per_slot)
-        st.json(results)
-        st.info(explain_results("ofdm", results))
+            rb_bandwidth_khz,
+            subcarrier_spacing_khz,
+            num_symbols_per_rb,
+            rb_duration_ms,
+            modulation_type,
+            parallel_blocks
+        )
+
+        if isinstance(results, dict):
+            st.json(results)
+            explanation = explain_results("ofdm", results)
+            st.info(str(explanation))
+        else:
+            st.warning("Results are not in the expected dictionary format.")
+
 
 elif task_id == "link_budget":
     st.header("Link Budget Calculator")
