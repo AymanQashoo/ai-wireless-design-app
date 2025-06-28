@@ -23,23 +23,25 @@ if task_id == "wireless_comm":
 
     bandwidth_khz = st.number_input("Signal Bandwidth (kHz)", value=8000)
     quantization_bits = st.number_input("Quantization Bits", value=8)
-    source_ratio = st.number_input("Source Encoder Ratio (Rs)", 0.1, 1.0, 0.5)
-    channel_ratio = st.number_input("Channel Encoder Ratio (Rc)", 0.1, 1.0, 0.75)
-
-    modulation_type = st.selectbox("Modulation Type", ["Select modulation", "QPSK", "16-QAM", "64QAM"])
+    source_ratio = st.number_input("Source Encoder Ratio (Rs)", min_value=0.0, max_value=1.0, value=0.5)
+    channel_ratio = st.number_input("Channel Encoder Ratio (Rc)", min_value=0.0, max_value=1.0, value=0.75)
+    modulation_type = st.selectbox("Modulation Type", ["QPSK", "16-QAM", "64QAM"], index=0)
 
     if st.button("Calculate"):
-        if modulation_type != "Select modulation":
-            results = compute_wireless_comm(
-                bandwidth_khz,
-                quantization_bits,
-                source_ratio,
-                channel_ratio,
-                modulation_type
-            )
+        results = compute_wireless_comm(
+            bandwidth_khz,
+            quantization_bits,
+            source_ratio,
+            channel_ratio,
+            modulation_type
+        )
+        if isinstance(results, dict):
             st.json(results)
+            explanation = explain_results("wireless_comm", results)
+            st.info(str(explanation))
         else:
-            st.warning("Please select a modulation type.")
+            st.warning("Results are not in the expected dictionary format.")
+
 
 
 elif task_id == "ofdm":
