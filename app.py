@@ -74,19 +74,30 @@ elif task_id == "ofdm":
 
 elif task_id == "link_budget":
     st.header("Link Budget Calculator")
-    tx_power = st.number_input("Transmitter Power (dBm)", value=40)
-    tx_gain = st.number_input("Transmitter Gain (dBi)", value=18)
-    rx_gain = st.number_input("Receiver Gain (dBi)", value=12)
-    distance_km = st.number_input("Distance (km)", value=5.0)
+
+    tx_power_dbm = st.number_input("Transmitted Power (dBm)", value=30)
+    tx_gain_dbi = st.number_input("Transmitter Antenna Gain (dBi)", value=15)
+    rx_gain_dbi = st.number_input("Receiver Antenna Gain (dBi)", value=12)
+    distance_km = st.number_input("Distance (km)", value=2.0)
     frequency_mhz = st.number_input("Frequency (MHz)", value=2400)
-    path_loss_exponent = st.number_input("Path Loss Exponent", value=3.0)
+    system_losses_db = st.number_input("System Losses (dB)", value=3.0)
 
     if st.button("Compute Link Budget"):
         results = compute_link_budget(
-            tx_power, tx_gain, rx_gain,
-            distance_km, frequency_mhz, path_loss_exponent)
-        st.json(results)
-        st.info(explain_results("link_budget", results))
+            tx_power_dbm,
+            tx_gain_dbi,
+            rx_gain_dbi,
+            distance_km,
+            frequency_mhz,
+            system_losses_db
+        )
+        if isinstance(results, dict):
+            st.json(results)
+            explanation = explain_results("link_budget", results)
+            st.info(str(explanation))
+        else:
+            st.warning("Results are not in the expected dictionary format.")
+
 
 elif task_id == "cellular":
     st.header("Cellular Network Design")
