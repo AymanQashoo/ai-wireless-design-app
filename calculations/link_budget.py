@@ -1,18 +1,26 @@
 import math
 
-def compute_link_budget(required_rx_power, tx_gain, rx_gain, distance_km, frequency_mhz):
-    # Calculate path loss (Free Space Path Loss)
-    path_loss = 20 * math.log10(distance_km) + 20 * math.log10(frequency_mhz) + 32.44
+def compute_link_budget(
+    tx_power_dbm,
+    tx_gain_dbi,
+    rx_gain_dbi,
+    distance_km,
+    frequency_mhz,
+    system_losses_db
+):
+    # Free Space Path Loss (FSPL) formula in dB
+    path_loss_db = 20 * math.log10(distance_km) + 20 * math.log10(frequency_mhz) + 32.44
 
-    # Calculate required transmitted power to achieve desired received power
-    required_tx_power = required_rx_power + path_loss - tx_gain - rx_gain
-
-    # Conversely, calculate actual received power if transmitter power was given
-    actual_rx_power = required_tx_power + tx_gain + rx_gain - path_loss
+    # Received Power in dBm
+    received_power_dbm = tx_power_dbm + tx_gain_dbi + rx_gain_dbi - path_loss_db - system_losses_db
 
     return {
-        "Required Received Signal Strength (dBm)": required_rx_power,
-        "Calculated Path Loss (dB)": path_loss,
-        "Required Transmitted Power (dBm)": required_tx_power,
-        "Actual Received Power (dBm)": actual_rx_power
+        "Transmitted Power (dBm)": tx_power_dbm,
+        "Transmitter Gain (dBi)": tx_gain_dbi,
+        "Receiver Gain (dBi)": rx_gain_dbi,
+        "Distance (km)": distance_km,
+        "Frequency (MHz)": frequency_mhz,
+        "System Losses (dB)": system_losses_db,
+        "Path Loss (dB)": path_loss_db,
+        "Received Power (dBm)": received_power_dbm
     }
