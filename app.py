@@ -102,18 +102,27 @@ elif task_id == "link_budget":
 
 elif task_id == "cellular":
     st.header("Cellular Network Design")
-    area = st.number_input("Total Area (km²)", value=150)
-    cell_radius = st.number_input("Cell Radius (km)", value=1.0)
-    cluster_size = st.number_input("Cluster Size", value=7)
-    user_density = st.number_input("User Density (users/km²)", value=500)
-    bandwidth_per_cell = st.number_input("Bandwidth per Cell (MHz)", value=5.0)
-    traffic_per_user = st.number_input("Traffic per User (Erlang)", value=0.02)
-    gos = st.number_input("Grade of Service (%)", value=2.0)
 
-    if st.button("Compute Cellular Design"):
+    total_bandwidth = st.number_input("Total Bandwidth (MHz)", value=25.0)
+    channel_bandwidth = st.number_input("Channel Bandwidth (MHz)", value=0.2)
+    num_cells = st.number_input("Number of Cells", value=50)
+    cell_radius = st.number_input("Cell Radius (km)", value=1.0)
+    reuse_factor = st.number_input("Reuse Factor (N)", value=7)
+    distance = st.number_input("Distance for Layout (km)", value=10.0)
+
+    if st.button("Calculate Cellular Design"):
         results = compute_cellular_parameters(
-            area, cell_radius, cluster_size,
-            user_density, bandwidth_per_cell,
-            traffic_per_user, gos)
-        st.json(results)
-        st.info(explain_results("cellular", results))
+            total_bandwidth,
+            channel_bandwidth,
+            num_cells,
+            cell_radius,
+            reuse_factor,
+            distance
+        )
+        if isinstance(results, dict):
+            st.json(results)
+            explanation = explain_results("cellular", results)
+            st.info(str(explanation))
+        else:
+            st.warning("Results are not in the expected dictionary format.")
+
