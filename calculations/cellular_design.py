@@ -1,20 +1,27 @@
 import math
 
-def compute_cellular_parameters(total_area, cell_radius, cluster_size,
-                                user_density, bandwidth_per_cell,
-                                traffic_per_user, gos):
-    cell_area = (3 * math.sqrt(3) / 2) * (cell_radius ** 2)
-    num_cells = math.ceil(total_area / cell_area)
-    total_users = total_area * user_density
-    channels_per_cell = math.ceil((user_density * cell_area * traffic_per_user) / gos)
-    max_users_per_cell = channels_per_cell // traffic_per_user
-    total_bandwidth_required = num_cells * bandwidth_per_cell
+def compute_cellular_parameters(
+    total_bandwidth_mhz,
+    channel_bandwidth_mhz,
+    num_cells,
+    cell_radius_km,
+    reuse_factor,
+    distance_km
+):
+    # Total available channels in system
+    total_channels = total_bandwidth_mhz / channel_bandwidth_mhz
+
+    # Channels per cell (assuming uniform allocation)
+    channels_per_cell = total_channels / reuse_factor
+
+    # Total system capacity = channels per cell × number of cells
+    total_system_capacity = channels_per_cell * num_cells
+
+    # Frequency reuse distance D = R * sqrt(3N), where N is reuse factor
+    reuse_distance = cell_radius_km * math.sqrt(3 * reuse_factor)
 
     return {
-        "Single Cell Area (km²)": cell_area,
-        "Number of Cells": num_cells,
         "Channels per Cell": channels_per_cell,
-        "Max Users per Cell": max_users_per_cell,
-        "Total Users": total_users,
-        "Total Bandwidth Required (MHz)": total_bandwidth_required
+        "Total System Capacity": total_system_capacity,
+        "Frequency Reuse Distance (km)": reuse_distance
     }
