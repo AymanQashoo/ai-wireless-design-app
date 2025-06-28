@@ -7,7 +7,7 @@ from ai_agent import explain_results  # Now uses Gemini API
 
 # Streamlit page setup
 st.set_page_config(page_title="AI Wireless Design", layout="wide")
-st.title("📡 AI-Powered Wireless Communication Design Tool")
+st.title("AI-Powered Wireless Communication Design Tool")
 
 # Sidebar tab options
 tabs = {
@@ -25,11 +25,23 @@ task_id = tabs[page]
 try:
     if task_id == "wireless_comm":
         st.header("Compute Wireless Communication System")
-        sampler_rate = st.number_input("Sampler Output Rate (Hz)", value=8000)
-        quantizer_rate = st.number_input("Quantizer Output Rate (bps)", value=64000)
+        sampling_rate = st.number_input("Sampling Rate (Hz)", value=8000)
+        quantization_bits = st.number_input("Quantization Bits (bits/sample)", value=8)
+        compression_ratio = st.number_input("Source Compression Ratio (e.g., 0.6)", min_value=0.1, max_value=1.0, value=0.6)
+        coding_rate = st.number_input("Channel Coding Rate (e.g., 0.7)", min_value=0.1, max_value=1.0, value=0.7)
+        interleaver_overhead = st.number_input("Interleaver Overhead (%)", min_value=0.0, value=10.0) / 100
+        burst_overhead = st.number_input("Burst Formatter Overhead (%)", min_value=0.0, value=20.0) / 100
+
 
         if st.button("Compute Wireless Comm"):
-            results = compute_wireless_comm(sampler_rate, quantizer_rate)
+            results = compute_wireless_comm(
+                                            sampling_rate,
+                                            quantization_bits,
+                                            compression_ratio,
+                                            coding_rate,
+                                            interleaver_overhead,
+                                            burst_overhead
+                                        )
             if isinstance(results, dict):
                 st.json(results)
                 explanation = explain_results("wireless_comm", results)
