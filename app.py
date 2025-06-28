@@ -51,13 +51,21 @@ try:
 
     elif task_id == "link_budget":
         st.header("Link Budget Calculator")
+
         tx_power = st.number_input("Transmitter Power (dBm)", value=30)
         tx_gain = st.number_input("Transmitter Gain (dBi)", value=15)
         rx_gain = st.number_input("Receiver Gain (dBi)", value=12)
-        path_loss = st.number_input("Path Loss (dB)", value=100)
+        distance_km = st.number_input("Distance Between Tx and Rx (km)", value=2.0)
+        frequency_mhz = st.number_input("Carrier Frequency (MHz)", value=2400)
 
         if st.button("Compute Link Budget"):
-            results = compute_link_budget(tx_power, tx_gain, rx_gain, path_loss)
+            results = compute_link_budget(
+                tx_power,
+                tx_gain,
+                rx_gain,
+                distance_km,
+                frequency_mhz
+            )
             if isinstance(results, dict):
                 st.json(results)
                 explanation = explain_results("link_budget", results)
@@ -65,33 +73,58 @@ try:
             else:
                 st.warning("Results are not in the expected dictionary format.")
 
-    elif task_id == "ofdm":
-        st.header("OFDM System Parameters")
-        bandwidth = st.number_input("Channel Bandwidth (Hz)", value=20000)
-        num_subcarriers = st.number_input("Number of Subcarriers", value=64)
 
-        if st.button("Compute OFDM Parameters"):
-            results = compute_ofdm_parameters(bandwidth, num_subcarriers)
-            if isinstance(results, dict):
-                st.json(results)
-                explanation = explain_results("ofdm", results)
-                st.info(str(explanation))
-            else:
-                st.warning("Results are not in the expected dictionary format.")
+    elif task_id == "ofdm":
+            st.header("OFDM System Parameters")
+
+            bandwidth = st.number_input("Channel Bandwidth (Hz)", value=20000000)
+            fft_size = st.number_input("FFT Size (e.g., 64, 128, 256)", value=64)
+            cyclic_prefix_ratio = st.number_input("Cyclic Prefix Ratio (e.g., 0.25)", min_value=0.0, max_value=1.0, value=0.25)
+            modulation_order = st.number_input("Modulation Order (bits per symbol, e.g., 2 for QPSK)", value=2)
+            num_resource_blocks = st.number_input("Number of Resource Blocks", value=100)
+            symbols_per_slot = st.number_input("Symbols per Slot", value=14)
+
+            if st.button("Compute OFDM Parameters"):
+                results = compute_ofdm_parameters(
+                    bandwidth,
+                    fft_size,
+                    cyclic_prefix_ratio,
+                    modulation_order,
+                    num_resource_blocks,
+                    symbols_per_slot
+                )
+                if isinstance(results, dict):
+                    st.json(results)
+                    explanation = explain_results("ofdm", results)
+                    st.info(str(explanation))
+                else:
+                    st.warning("Results are not in the expected dictionary format.")
+
 
     elif task_id == "cellular":
         st.header("Cellular Network Design")
-        area = st.number_input("Total Area (km²)", value=100)
-        cell_radius = st.number_input("Cell Radius (km)", value=1)
+
+        area = st.number_input("Total Area to Cover (km²)", value=100)
+        cell_radius = st.number_input("Cell Radius (km)", value=1.0)
+        cluster_size = st.number_input("Cluster Size (N)", value=7)
+        user_density = st.number_input("User Density (users per km²)", value=1000)
+        bandwidth_per_cell = st.number_input("Bandwidth per Cell (MHz)", value=5.0)
 
         if st.button("Compute Cellular Design"):
-            results = compute_cellular_parameters(area, cell_radius)
+            results = compute_cellular_parameters(
+                area,
+                cell_radius,
+                cluster_size,
+                user_density,
+                bandwidth_per_cell
+            )
             if isinstance(results, dict):
                 st.json(results)
                 explanation = explain_results("cellular", results)
                 st.info(str(explanation))
             else:
                 st.warning("Results are not in the expected dictionary format.")
+
 
 except ImportError as imp_err:
     st.error(f"Import error detected: {imp_err}")
