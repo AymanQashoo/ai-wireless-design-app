@@ -1,24 +1,37 @@
-def compute_ofdm_parameters(bandwidth, fft_size, cyclic_prefix_ratio,
-                            modulation_order, num_resource_blocks, symbols_per_slot):
-    subcarrier_spacing = bandwidth / fft_size
-    symbol_duration = 1 / subcarrier_spacing
-    cyclic_prefix_duration = symbol_duration * cyclic_prefix_ratio
-    total_symbol_duration = symbol_duration + cyclic_prefix_duration
+MODULATION_BITS = {
+    "QPSK": 2,
+    "16-QAM": 4,
+    "64-QAM": 6,
+    "1024-QAM": 10
+}
 
-    data_rate_per_re = modulation_order / total_symbol_duration
-    data_rate_per_symbol = fft_size * data_rate_per_re
-    data_rate_per_rb = 12 * symbols_per_slot * data_rate_per_re
-    total_capacity = num_resource_blocks * data_rate_per_rb
-    spectral_efficiency = total_capacity / bandwidth
+def compute_ofdm_parameters(
+    rb_bandwidth_khz,
+    subcarrier_spacing_khz,
+    num_symbols_per_rb,
+    rb_duration_ms,
+    modulation_type,
+    parallel_blocks
+):
+    # 1 RB = 12 subcarriers
+    num_subcarriers = 12
+    bits_per_symbol = MODULATION_BITS.get(modulation_type, 0)
+
+    total_bits_per_symbol = num_subcarriers * bits_per_symbol
+    total_bits_per_rb = total_bits_per_symbol * num_symbols_per_rb
+
+    # Convert RB duration to seconds
+    rb_duration_s = rb_duration_ms / 1000.0
+
+    # Max transmission rate per block (in bps)
+    rb_rate_bps = total_bits_per_rb / rb_duration_s
+
+    # Total across all parallel RBs
+    total_rate_bps = rb_rate_bps * parallel_blocks
 
     return {
-        "Subcarrier Spacing (Hz)": subcarrier_spacing,
-        "Symbol Duration (s)": symbol_duration,
-        "Cyclic Prefix Duration (s)": cyclic_prefix_duration,
-        "Total Symbol Duration (s)": total_symbol_duration,
-        "Data Rate per Resource Element (bps)": data_rate_per_re,
-        "Data Rate per OFDM Symbol (bps)": data_rate_per_symbol,
-        "Data Rate per Resource Block (bps)": data_rate_per_rb,
-        "Maximum Transmission Capacity (bps)": total_capacity,
-        "Spectral Efficiency (bps/Hz)": spectral_efficiency
+        "Number of Subcarriers": num_subcarriers,
+        "Total Bits per Symbol": total_bits_per_symbol,
+        "Total Bits per Resource Block": total_bits_per_rb,
+        "Max Transmission Rate (bps)": total_rate_bps
     }
