@@ -99,6 +99,7 @@ elif task_id == "link_budget":
             st.warning("Results are not in the expected dictionary format.")
 
 
+
 elif task_id == "cellular":
     st.header("Cellular Network Design")
     area = st.number_input("Total Area (km²)", value=150)
