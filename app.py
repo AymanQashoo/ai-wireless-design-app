@@ -20,21 +20,31 @@ task_id = tabs[page]
 
 if task_id == "wireless_comm":
     st.header("Wireless Communication System")
-    analog_bw = st.number_input("Analog Signal Bandwidth (Hz)", value=4000)
-    sampling_rate = st.number_input("Sampling Rate (Hz)", value=8000)
-    quantization_bits = st.number_input("Quantization Bits", value=8)
-    compression_ratio = st.number_input("Source Compression Ratio", 0.1, 1.0, 0.5)
-    coding_rate = st.number_input("Channel Coding Rate", 0.1, 1.0, 0.75)
-    interleaver_overhead = st.number_input("Interleaver Overhead (%)", value=10.0) / 100
-    burst_overhead = st.number_input("Burst Formatter Overhead (%)", value=15.0) / 100
 
-    if st.button("Compute Wireless Comm"):
-        results = compute_wireless_comm(
-            analog_bw, sampling_rate, quantization_bits,
-            compression_ratio, coding_rate,
-            interleaver_overhead, burst_overhead)
-        st.json(results)
-        st.info(explain_results("wireless_comm", results))
+    bandwidth_khz = st.number_input("Signal Bandwidth (kHz)", value=8000)
+    quantization_bits = st.number_input("Quantization Bits", value=8)
+    source_ratio = st.number_input("Source Encoder Ratio (Rs)", 0.1, 1.0, 0.5)
+    channel_ratio = st.number_input("Channel Encoder Ratio (Rc)", 0.1, 1.0, 0.75)
+    interleaver_overhead = st.number_input("Interleaver Overhead (%)", value=0.0) / 100
+    burst_overhead = st.number_input("Burst Formatter Overhead (%)", value=0.0) / 100
+
+    modulation_type = st.selectbox("Modulation Type", ["Select modulation", "QPSK", "16-QAM", "64QAM"])
+
+    if st.button("Calculate"):
+        if modulation_type != "Select modulation":
+            results = compute_wireless_comm(
+                bandwidth_khz,
+                quantization_bits,
+                source_ratio,
+                channel_ratio,
+                interleaver_overhead,
+                burst_overhead,
+                modulation_type
+            )
+            st.json(results)
+        else:
+            st.warning("Please select a modulation type.")
+
 
 elif task_id == "ofdm":
     st.header("OFDM System Parameters")
