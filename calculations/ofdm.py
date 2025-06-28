@@ -1,14 +1,13 @@
 def compute_ofdm_parameters(bandwidth, fft_size, cyclic_prefix_ratio,
-                            modulation_order, num_resource_blocks, symbols_per_slot=14):
+                            modulation_order, num_resource_blocks, symbols_per_slot):
     subcarrier_spacing = bandwidth / fft_size
     symbol_duration = 1 / subcarrier_spacing
     cyclic_prefix_duration = symbol_duration * cyclic_prefix_ratio
     total_symbol_duration = symbol_duration + cyclic_prefix_duration
 
-    # 1 Resource Element = 1 subcarrier in 1 symbol
     data_rate_per_re = modulation_order / total_symbol_duration
     data_rate_per_symbol = fft_size * data_rate_per_re
-    data_rate_per_rb = 12 * symbols_per_slot * data_rate_per_re  # 12 subcarriers × N symbols
+    data_rate_per_rb = 12 * symbols_per_slot * data_rate_per_re
     total_capacity = num_resource_blocks * data_rate_per_rb
     spectral_efficiency = total_capacity / bandwidth
 
