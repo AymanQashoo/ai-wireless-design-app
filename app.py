@@ -25,8 +25,6 @@ if task_id == "wireless_comm":
     quantization_bits = st.number_input("Quantization Bits", value=8)
     source_ratio = st.number_input("Source Encoder Ratio (Rs)", 0.1, 1.0, 0.5)
     channel_ratio = st.number_input("Channel Encoder Ratio (Rc)", 0.1, 1.0, 0.75)
-    interleaver_overhead = st.number_input("Interleaver Overhead (%)", value=0.0) / 100
-    burst_overhead = st.number_input("Burst Formatter Overhead (%)", value=0.0) / 100
 
     modulation_type = st.selectbox("Modulation Type", ["Select modulation", "QPSK", "16-QAM", "64QAM"])
 
@@ -37,8 +35,6 @@ if task_id == "wireless_comm":
                 quantization_bits,
                 source_ratio,
                 channel_ratio,
-                interleaver_overhead,
-                burst_overhead,
                 modulation_type
             )
             st.json(results)
