@@ -25,10 +25,8 @@ def compute_wireless_comm(
     interleaver_output_kbps = channel_output_kbps
     results["Interleaver Output Rate (kbps)"] = interleaver_output_kbps
 
-    if modulation_type == "QPSK":
-        burst_output_kbps = 114034.95
-    else:
-        burst_output_kbps = interleaver_output_kbps
+    
+    burst_output_kbps = interleaver_output_kbps * 2.376
     results["Burst Formatter Output Rate (kbps)"] = burst_output_kbps
 
     if modulation_bits > 0:
