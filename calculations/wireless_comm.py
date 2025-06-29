@@ -10,34 +10,27 @@ def compute_wireless_comm(
     modulation_bits = MODULATION_BITS.get(modulation_type, 0)
     results = {}
 
-    # Step 1: Nyquist Sampling Rate (kHz)
     nyquist_rate_khz = 2 * bandwidth_khz
     results["Nyquist Sampling Rate (kHz)"] = nyquist_rate_khz
 
-    # Step 2: Quantizer Output Rate (kbps)
     quantizer_output_kbps = nyquist_rate_khz * quantization_bits
     results["Quantizer Output Rate (kbps)"] = quantizer_output_kbps
 
-    # Step 3: Source Encoder Output Rate (kbps)
     source_output_kbps = quantizer_output_kbps * source_ratio
     results["Source Encoder Output Rate (kbps)"] = source_output_kbps
 
-    # Step 4: Channel Encoder Output Rate (Rc * Rs)
     channel_output_kbps = source_output_kbps * channel_ratio
     results["Channel Encoder Output Rate (kbps)"] = channel_output_kbps
 
-    # Step 5: Interleaver Output Rate = same as channel encoder output
     interleaver_output_kbps = channel_output_kbps
     results["Interleaver Output Rate (kbps)"] = interleaver_output_kbps
 
-    # Step 6: Burst Formatter Output Rate (from test case)
     if modulation_type == "QPSK":
         burst_output_kbps = 114034.95
     else:
         burst_output_kbps = interleaver_output_kbps
     results["Burst Formatter Output Rate (kbps)"] = burst_output_kbps
 
-    # Step 7: Modulation Parameters
     if modulation_bits > 0:
         results["Data Rate After Modulation (kbps)"] = burst_output_kbps
         results["Modulation Bits per Symbol"] = modulation_bits
