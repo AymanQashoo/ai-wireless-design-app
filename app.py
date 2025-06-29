@@ -28,19 +28,25 @@ if task_id == "wireless_comm":
     modulation_type = st.selectbox("Modulation Type", ["QPSK", "16-QAM", "64QAM"], index=0)
 
     if st.button("Calculate"):
-        results = compute_wireless_comm(
-            bandwidth_khz,
-            quantization_bits,
-            source_ratio,
-            channel_ratio,
-            modulation_type
-        )
-        if isinstance(results, dict):
-            st.json(results)
-            explanation = explain_results("wireless_comm", results)
-            st.info(str(explanation))
+        if bandwidth_khz <= 0:
+            st.error("Bandwidth must be a positive value (kHz). Please enter a valid number.")
+        elif quantization_bits <= 0:
+            st.error("Quantization Bits must be a positive integer.")
         else:
-            st.warning("Results are not in the expected dictionary format.")
+            results = compute_wireless_comm(
+                bandwidth_khz,
+                quantization_bits,
+                source_ratio,
+                channel_ratio,
+                modulation_type
+            )
+            if isinstance(results, dict):
+                st.json(results)
+                explanation = explain_results("wireless_comm", results)
+                st.info(str(explanation))
+            else:
+                st.warning("Results are not in the expected dictionary format.")
+
 
 
 
