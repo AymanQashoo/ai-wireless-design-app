@@ -13,20 +13,16 @@ def compute_ofdm_parameters(
     modulation_type,
     parallel_blocks
 ):
-    # 1 RB = 12 subcarriers
     num_subcarriers = 12
     bits_per_symbol = MODULATION_BITS.get(modulation_type, 0)
 
     total_bits_per_symbol = num_subcarriers * bits_per_symbol
     total_bits_per_rb = total_bits_per_symbol * num_symbols_per_rb
 
-    # Convert RB duration to seconds
     rb_duration_s = rb_duration_ms / 1000.0
 
-    # Max transmission rate per block (in bps)
     rb_rate_bps = total_bits_per_rb / rb_duration_s
 
-    # Total across all parallel RBs
     total_rate_bps = rb_rate_bps * parallel_blocks
 
     return {
