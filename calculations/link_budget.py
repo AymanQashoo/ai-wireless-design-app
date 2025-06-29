@@ -8,10 +8,8 @@ def compute_link_budget(
     frequency_mhz,
     system_losses_db
 ):
-    # Free Space Path Loss (FSPL) in dB
     path_loss_db = 20 * math.log10(distance_km) + 20 * math.log10(frequency_mhz) + 32.44
 
-    # Received Power in dBm
     received_power_dbm = tx_power_dbm + tx_gain_dbi + rx_gain_dbi - path_loss_db - system_losses_db
 
     return {
