@@ -61,21 +61,29 @@ elif task_id == "ofdm":
     parallel_blocks = st.number_input("Parallel Transmission Blocks", value=100)
 
     if st.button("Calculate OFDM Parameters"):
-        results = compute_ofdm_parameters(
-            rb_bandwidth_khz,
-            subcarrier_spacing_khz,
-            num_symbols_per_rb,
-            rb_duration_ms,
-            modulation_type,
-            parallel_blocks
-        )
-
-        if isinstance(results, dict):
-            st.json(results)
-            explanation = explain_results("ofdm", results)
-            st.info(str(explanation))
+        if rb_bandwidth_khz <= 0 or subcarrier_spacing_khz <= 0:
+            st.error(" Bandwidth and subcarrier spacing must be positive.")
+        elif num_symbols_per_rb <= 0 or rb_duration_ms <= 0:
+            st.error(" Number of symbols and duration must be greater than 0.")
+        elif parallel_blocks <= 0:
+            st.error(" Number of parallel blocks must be positive.")
         else:
-            st.warning("Results are not in the expected dictionary format.")
+            results = compute_ofdm_parameters(
+                rb_bandwidth_khz,
+                subcarrier_spacing_khz,
+                num_symbols_per_rb,
+                rb_duration_ms,
+                modulation_type,
+                parallel_blocks
+            )
+
+            if isinstance(results, dict):
+                st.json(results)
+                explanation = explain_results("ofdm", results)
+                st.info(str(explanation))
+            else:
+                st.warning("Results are not in the expected dictionary format.")
+
 
 
 elif task_id == "link_budget":
@@ -89,20 +97,26 @@ elif task_id == "link_budget":
     system_losses_db = st.number_input("System Losses (dB)", value=3.0)
 
     if st.button("Compute Link Budget"):
-        results = compute_link_budget(
-            tx_power_dbm,
-            tx_gain_dbi,
-            rx_gain_dbi,
-            distance_km,
-            frequency_mhz,
-            system_losses_db
-        )
-        if isinstance(results, dict):
-            st.json(results)
-            explanation = explain_results("link_budget", results)
-            st.info(str(explanation))
+        if distance_km <= 0:
+            st.error(" Distance must be greater than 0.")
+        elif frequency_mhz <= 0:
+            st.error(" Frequency must be a positive value.")
         else:
-            st.warning("Results are not in the expected dictionary format.")
+            results = compute_link_budget(
+                tx_power_dbm,
+                tx_gain_dbi,
+                rx_gain_dbi,
+                distance_km,
+                frequency_mhz,
+                system_losses_db
+            )
+            if isinstance(results, dict):
+                st.json(results)
+                explanation = explain_results("link_budget", results)
+                st.info(str(explanation))
+            else:
+                st.warning("Results are not in the expected dictionary format.")
+
 
 
 
@@ -117,18 +131,24 @@ elif task_id == "cellular":
     distance = st.number_input("Distance for Layout (km)", value=10.0)
 
     if st.button("Calculate Cellular Design"):
-        results = compute_cellular_parameters(
-            total_bandwidth,
-            channel_bandwidth,
-            num_cells,
-            cell_radius,
-            reuse_factor,
-            distance
-        )
-        if isinstance(results, dict):
-            st.json(results)
-            explanation = explain_results("cellular", results)
-            st.info(str(explanation))
+        if total_bandwidth <= 0 or channel_bandwidth <= 0:
+            st.error(" Bandwidth values must be positive.")
+        elif num_cells <= 0 or cell_radius <= 0 or reuse_factor <= 0:
+            st.error(" Number of cells, cell radius, and reuse factor must be positive.")
         else:
-            st.warning("Results are not in the expected dictionary format.")
+            results = compute_cellular_parameters(
+                total_bandwidth,
+                channel_bandwidth,
+                num_cells,
+                cell_radius,
+                reuse_factor,
+                distance
+            )
+            if isinstance(results, dict):
+                st.json(results)
+                explanation = explain_results("cellular", results)
+                st.info(str(explanation))
+            else:
+                st.warning("Results are not in the expected dictionary format.")
+
 
